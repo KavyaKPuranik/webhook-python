@@ -46,6 +46,8 @@ def webhook():
 	
     print("Request:")
     print(json.dumps(req, indent=4))
+	
+	# Call Functions based on action
     if req.get("result").get("action") == "trainStatus":
         res = processRequest(req)
     if req.get("result").get("action") == "trainRoute":
@@ -54,6 +56,7 @@ def webhook():
         res = processCode(req)
     if req.get("result").get("action") == "Tr_Name_to_Code":
         res = processTrainNumber(req)
+		
     res = json.dumps(res, indent=4)
     # print(res)
     r = make_response(res)
@@ -64,7 +67,7 @@ def webhook():
 def processCode(req):
     if req.get("result").get("action") != "stationCode":
         return {}
-    baseurl = "ttps://api.railwayapi.com/v2/suggest-station/name/"
+    baseurl = "https://api.railwayapi.com/v2/suggest-station/name/"
     remain = "/apikey/3gleroll53"
     yql_query = makeYqlQuery(req)
     if yql_query is None:
