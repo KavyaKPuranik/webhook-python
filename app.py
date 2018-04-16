@@ -49,7 +49,7 @@ def webhook():
 	
 	# Call Functions based on action
     if req.get("result").get("action") == "trainStatus":
-        res = processRequest(req)
+        res = processStatus(req)
     if req.get("result").get("action") == "trainRoute":
         res = processRoute(req)
     if req.get("result").get("action") == "stationCode":
@@ -63,25 +63,25 @@ def webhook():
     r.headers['Content-Type'] = 'application/json'
     return r
 
-
+# ----------------------------------------------------------------------------------------------------------
+# Station Code
+# ----------------------------------------------------------------------------------------------------------
 def processCode(req):
     if req.get("result").get("action") != "stationCode":
         return {}
     baseurl = "https://api.railwayapi.com/v2/suggest-station/name/"
     remain = "/apikey/3gleroll53"
-    yql_query = makeYqlQuery(req)
+    yql_query = makeQueryTrain(req)
     if yql_query is None:
         return {}
     yql_url = baseurl + yql_query + remain
     result = urlopen(yql_url).read()
     data = json.loads(result)
-    res = makeWebhookResult4(data)
+    res = makeWebhookResultCodeTrain(data)
     return res
 def processCode(req):
     if req.get("result").get("action") != "stationCode":
         return {}
-#     baseurl = "https://api.railwayapi.com/v2/name-to-code/station/"
-#     remain = "/apikey/e5hkcdzqsj"
     baseurl = "https://api.railwayapi.com/v2/suggest-station/name/"
     remain = "/apikey/3gleroll53"
     yql_query = makeQueryForPlace(req)
@@ -90,58 +90,28 @@ def processCode(req):
     yql_url = baseurl + yql_query + remain
     result = urlopen(yql_url).read()
     data = json.loads(result)
-    res = makeWebhookResult3(data)
+    res = makeWebhookResultCodePlace(data)
     return res
 
-
-def processRoute(req):
-    if req.get("result").get("action") != "trainRoute":
-        return {}
-    baseurl = "https://api.railwayapi.com/v2/route/train/"
-    remain = "/apikey/3gleroll53"
-    yql_query = makeYqlQuery(req)
-    if yql_query is None:
-        return {}
-    yql_url = baseurl + yql_query + remain
-    result = urlopen(yql_url).read()
-    data = json.loads(result)
-    res = makeWebhookResult2(data)
-    return res
-
-
-def processRequest(req):
-    if req.get("result").get("action") != "trainStatus":
-        return {}
-    baseurl = "https://api.railwayapi.com/v2/live/train/" 
-    i = datetime.datetime.now()
-    day = i.day 
-    month = i.month 
-    year = i.year
-    today = "10-04-2018"
-    remain = "/date/"+today+"/apikey/3gleroll53/"
-    yql_query = makeYqlQuery(req)
-    if yql_query is None:
-        return {}
-    yql_url = baseurl + yql_query + remain
-    result = urlopen(yql_url).read()
-    data = json.loads(result)
-    res = makeWebhookResult1(data)
-    return res
-
-
-def makeWebhookResult1(data):
-
-    speech = data.get('position')
-    return {
-        "speech": speech,
-        "displayText": speech,
-        # "data": data,
-        # "contextOut": [],
-        "source": "webhook-dm"
-    }
-def makeWebhookResult2(data):
-
-#     speech = data.get('position')
+def makeQueryTrain(req):
+    result = req.get("result")
+    parameters = result.get("parameters")
+    trainnum = parameters.get("Train")
+    if trainnum is None:
+        return None
+    return trainnum
+def makeQueryForPlace(req):
+    result = req.get("result")
+    parameters = result.get("parameters")
+    trainnum = parameters.get("geo-city")
+    if trainnum:
+        return trainnum
+    trainnum2 = parameters.get("place") 
+    if trainnum2:
+        return trainnum2
+    return {}
+		
+def makeWebhookResultCodeTrain(data):
     speech = ""
     for routes in data['route']:
         speech =  speech +routes['station']['name'] + " -> "
@@ -152,9 +122,7 @@ def makeWebhookResult2(data):
         # "contextOut": [],
         "source": "webhook-dm"
     }
-
-def makeWebhookResult3(data):
-
+def makeWebhookResultCodePlace(data):
     msg = []
     speech = ""
     for station in data['stations']:
@@ -168,7 +136,26 @@ def makeWebhookResult3(data):
             "source": "webhook-dm"
             }
     return reply
-def makeWebhookResult4(data):
+
+
+# ----------------------------------------------------------------------------------------------------------
+# Train Route
+# ----------------------------------------------------------------------------------------------------------
+def processRoute(req):
+    if req.get("result").get("action") != "trainRoute":
+        return {}
+    baseurl = "https://api.railwayapi.com/v2/route/train/"
+    remain = "/apikey/3gleroll53"
+    yql_query = makeQueryTrain(req)
+    if yql_query is None:
+        return {}
+    yql_url = baseurl + yql_query + remain
+    result = urlopen(yql_url).read()
+    data = json.loads(result)
+    res = makeWebhookResultRoute(data)
+    return res
+	
+def makeWebhookResultRoute(data):
     speech = ""
     for routes in data['route']:
         speech =  speech +routes['station']['name'] + " -> "
@@ -180,66 +167,45 @@ def makeWebhookResult4(data):
         "source": "webhook-dm"
     }
 
-def makeYqlQuery(req):
-    result = req.get("result")
-    parameters = result.get("parameters")
-    trainnum = parameters.get("Train")
-    if trainnum is None:
-        return None
 
-    return trainnum
-def makeQueryForPlace(req):
-    result = req.get("result")
-    parameters = result.get("parameters")
-    trainnum = parameters.get("geo-city")
-    if trainnum:
-        return trainnum
-    trainnum2 = parameters.get("place") 
-    if trainnum2:
-        return trainnum2
-    return {}
-
-
-def makeWebhookResult(data):
-    query = data.get('query')
-    if query is None:
+# ----------------------------------------------------------------------------------------------------------
+# Train Status
+# ----------------------------------------------------------------------------------------------------------
+def processStatus(req):
+    if req.get("result").get("action") != "trainStatus":
         return {}
-
-    result = query.get('results')
-    if result is None:
+    baseurl = "https://api.railwayapi.com/v2/live/train/" 
+    i = datetime.datetime.now()
+    day = i.day 
+    month = i.month 
+    year = i.year
+    today = "10-04-2018"
+    remain = "/date/"+today+"/apikey/3gleroll53/"
+    yql_query = makeQueryTrain(req)
+    if yql_query is None:
         return {}
+    yql_url = baseurl + yql_query + remain
+    result = urlopen(yql_url).read()
+    data = json.loads(result)
+    res = makeWebhookResultStatus(data)
+    return res
 
-    channel = result.get('channel')
-    if channel is None:
-        return {}
-
-    item = channel.get('item')
-    location = channel.get('location')
-    units = channel.get('units')
-    if (location is None) or (item is None) or (units is None):
-        return {}
-
-    condition = item.get('condition')
-    if condition is None:
-        return {}
-
-    # print(json.dumps(item, indent=4))
-
-    speech = "Today the weather in " + location.get('city') + ": " + condition.get('text') + \
-             ", And the temperature is " + condition.get('temp') + " " + units.get('temperature')
-
-    print("Response:")
-    print(speech)
-
+def makeWebhookResultStatus(data):
+    speech = data.get('position')
     return {
         "speech": speech,
         "displayText": speech,
         # "data": data,
         # "contextOut": [],
-        "source": "apiai-weather-webhook-sample"
+        "source": "webhook-dm"
     }
 
+	
 
+
+# ----------------------------------------------------------------------------------------------------------
+# Connection
+# ----------------------------------------------------------------------------------------------------------	
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
 
