@@ -42,7 +42,7 @@ def webhook():
 	
     baseurl = "ttps://api.railwayapi.com/v2/"
     apikey = "/apikey/3gleroll53"
-	action = action
+	action = req.get("result").get("action")
 	
     print("Request:")
     print(json.dumps(req, indent=4))
