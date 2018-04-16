@@ -42,17 +42,17 @@ def webhook():
 	
     baseurl = "ttps://api.railwayapi.com/v2/"
     apikey = "/apikey/3gleroll53"
-	action = req.get("result").get("action")
+	
 	
     print("Request:")
     print(json.dumps(req, indent=4))
-    if action == "trainStatus":
+    if req.get("result").get("action") == "trainStatus":
         res = processRequest(req)
-    if action == "trainRoute":
+    if req.get("result").get("action") == "trainRoute":
         res = processRoute(req)
-    if action == "stationCode":
+    if req.get("result").get("action") == "stationCode":
         res = processCode(req)
-    if action == "Tr_Name_to_Code":
+    if req.get("result").get("action") == "Tr_Name_to_Code":
         res = processTrainNumber(req)
     res = json.dumps(res, indent=4)
     # print(res)
@@ -62,7 +62,7 @@ def webhook():
 
 
 def processCode(req):
-    if action != "stationCode":
+    if req.get("result").get("action") != "stationCode":
         return {}
     baseurl = "ttps://api.railwayapi.com/v2/suggest-station/name/"
     remain = "/apikey/3gleroll53"
@@ -75,7 +75,7 @@ def processCode(req):
     res = makeWebhookResult4(data)
     return res
 def processCode(req):
-    if action != "stationCode":
+    if req.get("result").get("action") != "stationCode":
         return {}
 #     baseurl = "https://api.railwayapi.com/v2/name-to-code/station/"
 #     remain = "/apikey/e5hkcdzqsj"
@@ -92,7 +92,7 @@ def processCode(req):
 
 
 def processRoute(req):
-    if action != "trainRoute":
+    if req.get("result").get("action") != "trainRoute":
         return {}
     baseurl = "https://api.railwayapi.com/v2/route/train/"
     remain = "/apikey/3gleroll53"
@@ -107,7 +107,7 @@ def processRoute(req):
 
 
 def processRequest(req):
-    if action != "trainStatus":
+    if req.get("result").get("action") != "trainStatus":
         return {}
     baseurl = "https://api.railwayapi.com/v2/live/train/" 
     i = datetime.datetime.now()
