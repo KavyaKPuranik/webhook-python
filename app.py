@@ -39,20 +39,21 @@ app = Flask(__name__)
 @app.route('/webhook', methods=['POST'])
 def webhook():
     req = request.get_json(silent=True, force=True)
-
+    act = req.get("result").get("action")
+    
     print("Request:")
     print(json.dumps(req, indent=4))
-    if req.get("result").get("action") == "trainStatus":
+    if act == "trainStatus":
         res = processRequest(req)
-    if req.get("result").get("action") == "trainRoute":
+    if act == "trainRoute":
         res = processRoute(req)
-    if req.get("result").get("action") == "stationCode":
+    if act == "stationCode":
         res = processCode(req)
-    if req.get("result").get("action") == "Tr_Name_to_Code":
+    if act == "Tr_Name_to_Code":
         res = processTrainNumber(req)
-    if req.get("result").get("action") == "train_btwn_stations":
+    if act == "train_btwn_stations":
         res = processTrainBtwnStations(req)
-    if req.get("result").get("action") == "Train_fare":
+    if act == "Train_fare":
         res = processTrainFare(req)
     res = json.dumps(res, indent=4)
     # print(res)
@@ -68,17 +69,6 @@ def processRequest(req):
     if req.get("result").get("action") != "trainStatus":
         return {}
     return "Something"
-#     baseurl = "https://api.railwayapi.com/v2/live/train/" 
-#     today = datetime.date.today().strftime("%d-%m-%Y")
-#     remain = "/date/"+today+"/apikey/3gleroll53"
-#     yql_query = makeYqlQuery(req)
-#     if yql_query is None:
-#         return {}
-#     yql_url = baseurl + yql_query + remain
-#     result = urlopen(yql_url).read()
-#     data = json.loads(result)
-#     res = makeWebhookResult1(data)
-#     return res
 
 def processRoute(req):
     if req.get("result").get("action") != "trainRoute":
