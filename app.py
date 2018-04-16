@@ -63,11 +63,12 @@ def webhook():
 def processCode(req):
     if req.get("result").get("action") != "stationCode":
         return {}
-    remain = "suggest-station/name/"
+    baseurl = "ttps://api.railwayapi.com/v2/suggest-station/name/"
+    remain = "/apikey/3gleroll53"
     yql_query = makeYqlQuery(req)
     if yql_query is None:
         return {}
-    yql_url = baseurl + remain + yql_query + apikey
+    yql_url = baseurl + yql_query + remain
     result = urlopen(yql_url).read()
     data = json.loads(result)
     res = makeWebhookResult4(data)
@@ -75,11 +76,14 @@ def processCode(req):
 def processCode(req):
     if req.get("result").get("action") != "stationCode":
         return {}
-    remain = "suggest-station/name/"
+#     baseurl = "https://api.railwayapi.com/v2/name-to-code/station/"
+#     remain = "/apikey/e5hkcdzqsj"
+    baseurl = "https://api.railwayapi.com/v2/suggest-station/name/"
+    remain = "/apikey/3gleroll53"
     yql_query = makeQueryForPlace(req)
     if yql_query is None:
         return {}
-    yql_url = baseurl + remain + yql_query + apikey
+    yql_url = baseurl + yql_query + remain
     result = urlopen(yql_url).read()
     data = json.loads(result)
     res = makeWebhookResult3(data)
@@ -89,11 +93,12 @@ def processCode(req):
 def processRoute(req):
     if req.get("result").get("action") != "trainRoute":
         return {}
-    remain = "route/train/"
+    baseurl = "https://api.railwayapi.com/v2/route/train/"
+    remain = "/apikey/3gleroll53"
     yql_query = makeYqlQuery(req)
     if yql_query is None:
         return {}
-    yql_url = baseurl + remain + yql_query + apikey
+    yql_url = baseurl + yql_query + remain
     result = urlopen(yql_url).read()
     data = json.loads(result)
     res = makeWebhookResult2(data)
@@ -103,16 +108,17 @@ def processRoute(req):
 def processRequest(req):
     if req.get("result").get("action") != "trainStatus":
         return {}
-    remain = "live/train/" 
+    baseurl = "https://api.railwayapi.com/v2/live/train/" 
     i = datetime.datetime.now()
     day = i.day 
     month = i.month 
     year = i.year
     today = "10-04-2018"
+    remain = "/date/"+today+"/apikey/3gleroll53/"
     yql_query = makeYqlQuery(req)
     if yql_query is None:
         return {}
-    yql_url = baseurl + remain + + yql_query + "/date/" + today + apikey
+    yql_url = baseurl + yql_query + remain
     result = urlopen(yql_url).read()
     data = json.loads(result)
     res = makeWebhookResult1(data)
