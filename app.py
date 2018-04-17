@@ -39,21 +39,20 @@ app = Flask(__name__)
 @app.route('/webhook', methods=['POST'])
 def webhook():
     req = request.get_json(silent=True, force=True)
-    act = req.get("result").get("action")
-    
+
     print("Request:")
     print(json.dumps(req, indent=4))
-    if act == "trainStatus":
+    if req.get("result").get("action") == "trainStatus":
         res = processRequest(req)
-    if act == "trainRoute":
+    if req.get("result").get("action") == "trainRoute":
         res = processRoute(req)
-    if act == "stationCode":
+    if req.get("result").get("action") == "stationCode":
         res = processCode(req)
-    if act == "Tr_Name_to_Code":
+    if req.get("result").get("action") == "Tr_Name_to_Code":
         res = processTrainNumber(req)
-    if act == "train_btwn_stations":
+    if req.get("result").get("action") == "train_btwn_stations":
         res = processTrainBtwnStations(req)
-    if act == "Train_fare":
+    if req.get("result").get("action") == "Train_fare":
         res = processTrainFare(req)
     res = json.dumps(res, indent=4)
     # print(res)
@@ -68,7 +67,17 @@ def webhook():
 def processRequest(req):
     if req.get("result").get("action") != "trainStatus":
         return {}
-    return "Something"
+    baseurl = "https://api.railwayapi.com/v2/live/train/" 
+    today = datetime.date.today().strftime("%d-%m-%Y")
+    remain = "/date/"+today+"/apikey/3gleroll53"
+    yql_query = makeYqlQuery(req)
+    if yql_query is None:
+        return {}
+    yql_url = baseurl + yql_query + remain
+    result = urlopen(yql_url).read()
+    data = json.loads(result)
+    res = makeWebhookResult1(data)
+    return res
 
 def processRoute(req):
     if req.get("result").get("action") != "trainRoute":
@@ -137,58 +146,59 @@ def processTrainBtwnStations(req):
     res = makeWebhookResultForBtwnStations(data)
     return res
 
-def processTrainFare(req):
-    if req.get("result").get("action") != "Train_fare":
-        return {}
-    baseurl = "https://api.railwayapi.com/v2/fare/train/"
-    remain = "/apikey/3gleroll53"
-    yql_query_Trnum  = makeYqlQuery(req)
-    if yql_query_Trnum is None:
-        return {}
+# def processTrainFare(req):
+#     if req.get("result").get("action") != "Train_fare":
+#         return {}
+#     baseurl = "https://api.railwayapi.com/v2/fare/train/"
+#     remain = "/age/18/pref/SL/quota/PT/date/18-04-2018/apikey/3gleroll53"
+#      yql_query_Trnum  = makeYqlQuery(req)
+#     if yql_query_Trnum is None:
+#         return {}
 #     p = yql_query_Trnum
-    p = "12555"
-    yql_query_src  = makeYqlQueryForSrc(req)
-    if yql_query_src is None:
-        return {}
+# #     p = "12555"
+# #     yql_query_src  = makeYqlQueryForSrc(req)
+#     yql_query_src = "gkp"
+#     if yql_query_src is None:
+#         return {}
 #     q = "/source/"+ yql_query_src
-    q= "/source/gkp"
-    yql_query_des  = makeYqlQueryForDes(req)
-    if yql_query_des is None:
-        return {}
+# #     q= "/source/gkp"
+# #     yql_query_des  = makeYqlQueryForDes(req)
+#     yql_query_des = "ndls"
+#     if yql_query_des is None:
+#         return {}
 #     r = "/dest/"+ yql_query_des
-    r = "/dest/ndls"
-    yql_query_date  = makeYqlQueryForDat(req)
-    if yql_query_date is None:
-        yql_query_date = "18-04-2018"
-    s = "/date/"+yql_query_date
+# #     r = "/dest/ndls"
+#     yql_query_date  = makeYqlQueryForDat(req)
+#     if yql_query_date is None:
+#         yql_query_date = "17-04-2018"
+#     s = "/date/"+yql_query_date
     
-    yql_query_class  = makeYqlQueryForClass(req)
-    if yql_query_class is None:
-        return {}
+#     yql_query_class  = makeYqlQueryForClass(req)
+#     if yql_query_class is None:
+#         return {}
 #     t = "/pref/"+yql_query_class
-    t = "/pref/SL"
-    yql_query_quota  = makeYqlQueryForQuota(req)
-    if yql_query_quota is None:
-        return {}
+# #     t = "/pref/SL"
+#     yql_query_quota  = makeYqlQueryForQuota(req)
+#     if yql_query_quota is None:
+#         return {}
 #     u = "quota/"+ yql_query_quota
-    u = "quota/PT"
-    yql_query_age  = makeYqlQueryForAge(req)
-    if yql_query_age is None:
-        return {}
+# #     u = "quota/PT"
+#     yql_query_age  = makeYqlQueryForAge(req)
+#     if yql_query_age is None:
+#         return {}
 #     v = "age/" + yql_query_age 
-    v = "age/18"
+# #     v = "age/18"
     
-    w = p+q+r
-    x = w+v+t
-    y = x+u+s
+#     w = p+q+r
+# #     x = w+v+t
+# #     y = x+u+s
 
-#     yql_url = baseurl + y + remain
-    yql_url = "https://api.railwayapi.com/v2/fare/train/12555/source/gkp/dest/ndls/age/18/pref/SL/quota/PT/date/18-04-2018/apikey/e5hkcdzqsj
-"
-    result = urlopen(yql_url).read()
-    data = json.loads(result)
-    res = makeWebhookResultForFARE(data)
-    return res
+#     yql_url = baseurl + w + remain
+# #     yql_url = "https://api.railwayapi.com/v2/fare/train/12555/source/gkp/dest/ndls/age/18/pref/SL/quota/PT/date/18-04-2018/apikey/3gleroll53"
+#     result = urlopen(yql_url).read()
+#     data = json.loads(result)
+#     res = makeWebhookResultForFARE(data)
+#     return res
 # ----------------------------------------json data extraction functions---------------------------------------------------
 
 def makeWebhookResult1(data):
@@ -282,7 +292,7 @@ def makeWebhookResultForFARE(data):
 def makeYqlQuery(req):
     result = req.get("result")
     parameters = result.get("parameters")
-    trainnum = parameters.get("Train_number")
+    trainnum = parameters.get("Train_numbers")
     if trainnum is None:
         return None
     return trainnum
