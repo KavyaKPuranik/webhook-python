@@ -42,6 +42,7 @@ def webhook():
 
     print("Request:")
     print(json.dumps(req, indent=4))
+	
     if req.get("result").get("action") == "trainStatus":
         res = processStatus(req)
     if req.get("result").get("action") == "trainRoute":
@@ -54,8 +55,8 @@ def webhook():
         res = processTrainBtwnStations(req)
     if req.get("result").get("action") == "Train_fare":
         res = processTrainFare(req)
+		
     res = json.dumps(res, indent=4)
-    # print(res)
     r = make_response(res)
     r.headers['Content-Type'] = 'application/json'
     return r
@@ -64,6 +65,10 @@ def webhook():
 
 #----------------------------------------processing Funtions---------------------------------------------------
 
+
+#--------------------------------------------------------------------------------------------------------------
+# Train Status
+#--------------------------------------------------------------------------------------------------------------
 def processStatus(req):
     if req.get("result").get("action") != "trainStatus":
         return {}
@@ -76,9 +81,12 @@ def processStatus(req):
     yql_url = baseurl + yql_query + remain
     result = urlopen(yql_url).read()
     data = json.loads(result)
-    res = makeWebhookResult1(data)
+    res = makeWebhookResultStatus(data)
     return res
 
+#--------------------------------------------------------------------------------------------------------------
+# Train Route
+#--------------------------------------------------------------------------------------------------------------
 def processRoute(req):
     if req.get("result").get("action") != "trainRoute":
         return {}
@@ -90,9 +98,12 @@ def processRoute(req):
     yql_url = baseurl + yql_query + remain
     result = urlopen(yql_url).read()
     data = json.loads(result)
-    res = makeWebhookResult2(data)
+    res = makeWebhookResultRoute(data)
     return res
 
+#--------------------------------------------------------------------------------------------------------------
+# Station Code
+#--------------------------------------------------------------------------------------------------------------
 def processCode(req):
     if req.get("result").get("action") != "stationCode":
         return {}
@@ -104,9 +115,12 @@ def processCode(req):
     yql_url = baseurl + yql_query + remain
     result = urlopen(yql_url).read()
     data = json.loads(result)
-    res = makeWebhookResult3(data)
+    res = makeWebhookResultCode(data)
     return res
 
+#--------------------------------------------------------------------------------------------------------------
+# Train Number
+#--------------------------------------------------------------------------------------------------------------
 def processTrainNumber(req):
     if req.get("result").get("action") != "Tr_Name_to_Code":
         return {}
@@ -118,10 +132,13 @@ def processTrainNumber(req):
     yql_url = baseurl +yql_query+ remain
     result = urlopen(yql_url).read()
     data = json.loads(result)
-    res = makeWebhookResult4(data)
+    res = makeWebhookResultTrainNum(data)
     return res
 
 
+#--------------------------------------------------------------------------------------------------------------
+# Trains Between
+#--------------------------------------------------------------------------------------------------------------
 def processTrainBtwnStations(req):
     if req.get("result").get("action") != "train_btwn_stations":
         return {}
@@ -201,7 +218,7 @@ def processTrainBtwnStations(req):
 #     return res
 # ----------------------------------------json data extraction functions---------------------------------------------------
 
-def makeWebhookResult1(data):
+def makeWebhookResultStatus(data):
 
     speech = data.get('position')
     return {
@@ -211,7 +228,7 @@ def makeWebhookResult1(data):
         # "contextOut": [],
         "source": "webhook-dm"
     }
-def makeWebhookResult2(data):
+def makeWebhookResultRoute(data):
 
 #     speech = data.get('position')
     speech = ""
@@ -225,7 +242,7 @@ def makeWebhookResult2(data):
         "source": "webhook-dm"
     }
 
-def makeWebhookResult3(data):
+def makeWebhookResultCode(data):
 
     msg = []
     speech = ""
@@ -242,7 +259,7 @@ def makeWebhookResult3(data):
     return reply
 
 
-def makeWebhookResult4(data):
+def makeWebhookResultTrainNum(data):
     msg = []
     speech = ""
     for train in data['trains']:
