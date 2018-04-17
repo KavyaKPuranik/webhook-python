@@ -111,17 +111,6 @@ def processCode(req):
     res = makeWebhookResultPlace(data)
     return res
 
-def makeQueryForPlace(req):
-    result = req.get("result")
-    parameters = result.get("parameters")
-    trainnum = parameters.get("geo-city")
-    if trainnum:
-        return trainnum
-    trainnum2 = parameters.get("place") 
-    if trainnum2:
-        return trainnum2
-    return {}
-
 def makeWebhookResultPlace(data):
     msg = []
     speech = ""
@@ -141,6 +130,9 @@ def makeWebhookResultPlace(data):
     return reply
 
 
+# ----------------------------------------------------------------------------------------------------------
+# Train Name to code
+# ----------------------------------------------------------------------------------------------------------
 def processTrainNumber(req):
     if req.get("result").get("action") != "Tr_Name_to_Code":
         return {}
@@ -152,9 +144,23 @@ def processTrainNumber(req):
     yql_url = baseurl +yql_query+ remain
     result = urlopen(yql_url).read()
     data = json.loads(result)
-    res = makeWebhookResult4(data)
+    res = makeWebhookResultTrainNumber(data)
     return res
 
+def makeWebhookResultTrainNumber(data):
+    msg = []
+    speech = ""
+    for train in data['trains']:
+        speech = speech + train['name'] +"  -  "+ train['number'] + ", "
+        msg.append(train['name'] +"  -  "+ train['number'])
+    messages = [{"type": 0, "speech": s[0]} for s in zip(msg)]
+    reply = {
+            "speech": speech,
+            "displayText": speech,
+            "messages": messages,
+            "source": "webhook-dm"
+            }
+    return reply
 
 def processTrainBtwnStations(req):
     if req.get("result").get("action") != "train_btwn_stations":
@@ -259,21 +265,6 @@ def makeWebhookResult2(data):
         "source": "webhook-dm"
     }
 
-def makeWebhookResult4(data):
-    msg = []
-    speech = ""
-    for train in data['trains']:
-        speech = speech + train['name'] +"  -  "+ train['number'] + ", "
-        msg.append(train['name'] +"  -  "+ train['number'])
-    messages = [{"type": 0, "speech": s[0]} for s in zip(msg)]
-    reply = {
-            "speech": speech,
-            "displayText": speech,
-            "messages": messages,
-            "source": "webhook-dm"
-            }
-    return reply
-
 
 
 def makeWebhookResultForBtwnStations(data):
@@ -313,6 +304,17 @@ def makeYqlQuery(req):
     if trainnum is None:
         return None
     return trainnum
+
+def makeQueryForPlace(req):
+    result = req.get("result")
+    parameters = result.get("parameters")
+    trainnum = parameters.get("geo-city")
+    if trainnum:
+        return trainnum
+    trainnum2 = parameters.get("place") 
+    if trainnum2:
+        return trainnum2
+    return {}
 
 def makeYqlQueryForTrain(req):
     result = req.get("result")
