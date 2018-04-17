@@ -43,7 +43,7 @@ def webhook():
     print("Request:")
     print(json.dumps(req, indent=4))
     if req.get("result").get("action") == "trainStatus":
-        res = processRequest(req)
+        res = processStatus(req)
     if req.get("result").get("action") == "trainRoute":
         res = processRoute(req)
     if req.get("result").get("action") == "stationCode":
@@ -64,7 +64,7 @@ def webhook():
 
 #----------------------------------------processing Funtions---------------------------------------------------
 
-def processRequest(req):
+def processStatus(req):
     if req.get("result").get("action") != "trainStatus":
         return {}
     baseurl = "https://api.railwayapi.com/v2/live/train/" 
