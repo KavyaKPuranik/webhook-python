@@ -64,6 +64,8 @@ def webhook():
         res = processPNRStatus(req)
     if req.get("result").get("action") == "stationName":
         res = processStationName(req)
+    if req.get("result").get("action") == "seatAvailability":
+        res = processSeatAvailability(req)
     res = json.dumps(res, indent=4)
 
     r = make_response(res)
@@ -342,7 +344,67 @@ def processStationName(req):
             "source": "webhook-dm"
             }
     return reply
-  
+
+#Seat Availability
+def processSeatAvailability(req):
+    if req.get("result").get("action") != "PNRStatus":
+        return {}
+    baseurl = "https://api.railwayapi.com/v2/pnr-status/pnr/" 
+    remain = "/apikey/"+apikey
+    pnrnum = req.get("result").get("parameters").get("pnr_number")
+    if pnrnum is None:
+        speech = "Please enter pnr number"
+    query = baseurl + pnrnum + remain
+    result = urlopen(query).read()
+    data = json.loads(result)   
+    #Process response
+    msg = []
+    speech = ""
+    train = json.dumps(data.get("train").get("name"))
+    if train == "null":
+        speech = "Sorry, the PNR seems to be invalid or expired"
+        msg.append(speech)
+    else:
+        speech = "The chart for the train " + train
+        train_num =  json.dumps(data.get("train").get("number")) 
+        print("Here "+train_num)
+        speech = speech + " (" + train_num + ") from station "
+        from_stat = json.dumps(data.get("from_station").get("name")) 
+        to_stat = json.dumps(data.get("to_station").get("name")) 
+        speech = speech + from_stat + " to the station " + to_stat
+        print("Speech "+speech)
+        chart_prepared = json.dumps(data.get("chart_prepared"))#.get("name")
+        if chart_prepared == "false":
+            speech = speech + " has not been prepared."
+        else:
+            speech = speech + " has been prepared."
+        msg.append(speech)
+        boarding_point = json.dumps(data.get("boarding_point").get("name"))
+        journey_class = json.dumps(data.get("journey_class").get("code"))
+        details = "The intended "+ journey_class +" class journey starts from " + boarding_point + " to "
+        reservation_upto = json.dumps(data.get("reservation_upto").get("name"))
+        doj =  json.dumps(data.get("doj"))
+        details = details + reservation_upto + " on " + doj 
+        speech = speech + " -> " + details
+        msg.append(details)
+        total_passengers =  json.dumps(data.get("total_passengers")) 
+        details = "The booking details of "+ total_passengers +" passenger/s are as follows: "
+        speech = speech + " -> " + details
+        msg.append(details)
+        for passenger in data['passengers']:
+            speech = speech + passenger['current_status'] + ", "
+            msg.append(passenger['current_status'])
+	
+    messages = [{"type": 0, "speech": s[0]} for s in zip(msg)]
+    reply = {
+            "speech": speech,
+            "displayText": speech,
+            "messages": messages,
+            "source": "webhook-dm"
+            }
+    return reply
+
+
 # ----------------------------------------json data extraction functions---------------------------------------------------
 
 def makeWebhookResultStatus(data):
