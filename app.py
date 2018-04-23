@@ -385,11 +385,14 @@ def processSeatAvailability(req):
     print("speech " + speech)
     if speech == "":
         query = baseurl + trainNum + "/source/" + stationFrom + "/dest/" + stationTo + "/date/" + date + "/pref/" + pref + "/quota/" + quota + remain
-        speech = query
         print("query " + query)
-#         result = urlopen(query).read()
-#     data = json.loads(result)   
+        result = urlopen(query).read()
+    data = json.loads(result)   
 #     #Process response
+    response_code = json.dumps(data.get("response_code"))
+    if response_code == "404":
+        speech = "Sorry, No data"
+        msg.append(speech)
 #     train = json.dumps(data.get("train").get("name"))
 #     if train == "null":
 #         speech = "Sorry, the PNR seems to be invalid or expired"
