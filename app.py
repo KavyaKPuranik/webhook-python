@@ -380,7 +380,7 @@ def processSeatAvailability(req):
         speech = "Please enter travel class"
     quota = req.get("result").get("parameters").get("quota")
     print("quota " + quota)
-    if quota is None:
+    if not quota:
         speech = "Please enter travel quota"
     print("speech " + speech)
     if speech == "":
