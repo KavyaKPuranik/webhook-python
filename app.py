@@ -373,7 +373,7 @@ def processSeatAvailability(req):
         speech = "Please enter travel quota"
     print("speech " + speech)
     if speech == "":
-        print("hi " + speech)
+        print("hi " + baseurl + trainNum + "/source/" + stationFrom + "/dest/" + stationTo + "/date/" + date + "/pref/" + pref + "/quota/" + quota + remain)
         query = baseurl + trainNum + "/source/" + stationFrom + "/dest/" + stationTo + "/date/" + date + "/pref/" + pref + "/quota/" + quota + remain
         speech = query
         print("query " + query)
