@@ -389,7 +389,7 @@ def processSeatAvailability(req):
         result = urlopen(query).read()
     data = json.loads(result)   
 #     #Process response
-    response_code = json.dumps(data.get("response_code"))
+    response_code = data.get("response_code")
     print(response_code)
     if response_code != 200:
         speech = "Sorry, No data available. Please check the train number/source/destination/quota/class"
