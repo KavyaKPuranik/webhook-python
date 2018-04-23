@@ -405,11 +405,11 @@ def processSeatAvailability(req):
         to_stat = json.dumps(data.get("to_station").get("name")) 
         speech = speech + from_stat + " to the station " + to_stat
         print("Speech "+speech)
-	availability = []
-        for avail in data['availability']:
-            if date == avail['date']:
-                speech = speech + " on " + avail['date'] +": is " + avail['status'] + ", "
-                msg.append(" on " + avail['date'] +": is " + avail['status'])
+        availability = data['availability']
+        for avail in availability:
+#             if date == avail['date']:
+            speech = speech + " on " + avail['date'] +": is " + avail['status'] + ", "
+            msg.append(" on " + avail['date'] +": is " + avail['status'])
         
 #         boarding_point = json.dumps(data.get("boarding_point").get("name"))
 #         journey_class = json.dumps(data.get("journey_class").get("code"))
