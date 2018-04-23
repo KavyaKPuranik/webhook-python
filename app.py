@@ -397,7 +397,7 @@ def processSeatAvailability(req):
     else:
         train = json.dumps(data.get("train").get("name"))
         msg.append(speech)
-        speech = "The chart for the train " + train
+        speech = "The seat availability for the train " + train
         train_num =  json.dumps(data.get("train").get("number")) 
         print("Here "+train_num)
         speech = speech + " (" + train_num + ") from station "
@@ -405,12 +405,11 @@ def processSeatAvailability(req):
         to_stat = json.dumps(data.get("to_station").get("name")) 
         speech = speech + from_stat + " to the station " + to_stat
         print("Speech "+speech)
-        chart_prepared = json.dumps(data.get("chart_prepared"))#.get("name")
-        if chart_prepared == "false":
-            speech = speech + " has not been prepared."
-        else:
-            speech = speech + " has been prepared."
-        msg.append(speech)
+	availability = data['availability']
+        for avail in availability:
+            speech = speech + " on " + avail['date'] +": is " + avail['status'] + ", "
+            msg.append(" on " + avail['date'] +": is " + avail['status'])
+        
 #         boarding_point = json.dumps(data.get("boarding_point").get("name"))
 #         journey_class = json.dumps(data.get("journey_class").get("code"))
 #         details = "The intended "+ journey_class +" class journey starts from " + boarding_point + " to "
