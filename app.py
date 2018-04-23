@@ -407,9 +407,9 @@ def processSeatAvailability(req):
         print("Speech "+speech)
         availability = []
         for avail in data['availability']:
-            if date == avail['date']:
-                speech = speech + " on " + avail['date'] +": is " + avail['status'] + ", "
-                msg.append(" on " + avail['date'] +": is " + avail['status'])
+#             if date == avail['date']:
+            speech = speech + " on " + avail['date'] +": is " + avail['status'] + ", "
+            msg.append(" on " + avail['date'] +": is " + avail['status'])
 #             else:
 #                 availability.append(avail['date'] +": " + avail['status'])
         
