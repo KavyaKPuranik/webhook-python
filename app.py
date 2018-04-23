@@ -371,9 +371,11 @@ def processSeatAvailability(req):
     quota = req.get("result").get("parameters").get("quota")
     if quota is None:
         speech = "Please enter travel quota"
+    print("speech " + speech)
     if speech == "":
         query = baseurl + trainNum + "/source/" + stationFrom + "/dest/" + stationTo + "/date/" + date + "/pref/" + pref + "/quota/" + quota + remain
         speech = query
+        print("query " + query)
 #         result = urlopen(query).read()
 #     data = json.loads(result)   
 #     #Process response
