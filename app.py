@@ -356,7 +356,7 @@ def processSeatAvailability(req):
     result = req.get("result")
     parameters = result.get("parameters")
     print(json.dumps(parameters))
-    trainNum = json.dumps(parameters.get("train_num"))
+    trainNum = parameters.get("train_num")
     print("trainNum " + trainNum)
     if trainNum is None:
         speech = "Please enter train number"
