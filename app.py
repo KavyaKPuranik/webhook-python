@@ -374,11 +374,11 @@ def processSeatAvailability(req):
         date = datetime.date.today().strftime("%d-%m-%Y")
     else:
         date = datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%d-%m-%Y')
-    pref = req.get("result").get("parameters").get("class")
+    pref = parameters.get("class")
     print("pref " + pref)
     if pref is None:
         speech = "Please enter travel class"
-    quota = req.get("result").get("parameters").get("quota")
+    quota = parameters.get("quota")
     print("quota " + quota)
     if not quota:
         speech = "Please enter travel quota"
@@ -390,6 +390,7 @@ def processSeatAvailability(req):
     data = json.loads(result)   
 #     #Process response
     response_code = json.dumps(data.get("response_code"))
+    print(response_code)
     if response_code == "404":
         speech = "Sorry, No data"
         msg.append(speech)
