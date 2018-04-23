@@ -390,12 +390,13 @@ def processSeatAvailability(req):
     data = json.loads(result)   
 #     #Process response
     response_code = data.get("response_code")
-    if response_code != 200:
+    if response_code != "200":
         print("response code "+response_code)
         speech = "Sorry, No data available. Please check the train number/source/destination/quota/class"
         msg.append(speech)
     else:
         train = json.dumps(data.get("train").get("name"))
+        print("train " + train)
         speech = "The seat availability for the train " + train
         train_num =  json.dumps(data.get("train").get("number")) 
         print("Here "+train_num)
