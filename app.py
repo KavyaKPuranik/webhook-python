@@ -347,53 +347,70 @@ def processStationName(req):
 
 #Seat Availability
 def processSeatAvailability(req):
-    if req.get("result").get("action") != "PNRStatus":
+    if req.get("result").get("action") != "seatAvailability":
         return {}
-    baseurl = "https://api.railwayapi.com/v2/pnr-status/pnr/" 
-    remain = "/apikey/"+apikey
-    pnrnum = req.get("result").get("parameters").get("pnr_number")
-    if pnrnum is None:
-        speech = "Please enter pnr number"
-    query = baseurl + pnrnum + remain
-    result = urlopen(query).read()
-    data = json.loads(result)   
-    #Process response
     msg = []
     speech = ""
-    train = json.dumps(data.get("train").get("name"))
-    if train == "null":
-        speech = "Sorry, the PNR seems to be invalid or expired"
+    baseurl = "https://api.railwayapi.com/v2/check-seat/train/" 
+    remain = "/apikey/"+apikey
+    trainNum = req.get("result").get("parameters").get("train_num")
+    if trainNum is None:
+        speech = "Please enter train number"
+    stationFrom = req.get("result").get("parameters").get("station_from")
+    if stationFrom is None:
+        speech = "Please enter source station"
+    stationTo = req.get("result").get("parameters").get("station_to")
+    if stationTo is None:
+        speech = "Please enter destination station"
+    date = req.get("result").get("parameters").get("date")
+    if date is None:
+        speech = "Please enter travel date"
+    pref = req.get("result").get("parameters").get("class")
+    if pref is None:
+        speech = "Please enter travel class"
+    quota = req.get("result").get("parameters").get("quota")
+    if quota is None:
+        speech = "Please enter travel quota"
+    if speech == "":
+        query = baseurl + trainNum + "/source/" + stationFrom + "/dest/" + stationTo + "/date/" + date + "/pref/" + pref + "/quota/" + quota + remain
+        speech = query
+#         result = urlopen(query).read()
+#     data = json.loads(result)   
+#     #Process response
+#     train = json.dumps(data.get("train").get("name"))
+#     if train == "null":
+#         speech = "Sorry, the PNR seems to be invalid or expired"
+#         msg.append(speech)
+#     else:
+#         speech = "The chart for the train " + train
+#         train_num =  json.dumps(data.get("train").get("number")) 
+#         print("Here "+train_num)
+#         speech = speech + " (" + train_num + ") from station "
+#         from_stat = json.dumps(data.get("from_station").get("name")) 
+#         to_stat = json.dumps(data.get("to_station").get("name")) 
+#         speech = speech + from_stat + " to the station " + to_stat
+#         print("Speech "+speech)
+#         chart_prepared = json.dumps(data.get("chart_prepared"))#.get("name")
+#         if chart_prepared == "false":
+#             speech = speech + " has not been prepared."
+#         else:
+#             speech = speech + " has been prepared."
         msg.append(speech)
-    else:
-        speech = "The chart for the train " + train
-        train_num =  json.dumps(data.get("train").get("number")) 
-        print("Here "+train_num)
-        speech = speech + " (" + train_num + ") from station "
-        from_stat = json.dumps(data.get("from_station").get("name")) 
-        to_stat = json.dumps(data.get("to_station").get("name")) 
-        speech = speech + from_stat + " to the station " + to_stat
-        print("Speech "+speech)
-        chart_prepared = json.dumps(data.get("chart_prepared"))#.get("name")
-        if chart_prepared == "false":
-            speech = speech + " has not been prepared."
-        else:
-            speech = speech + " has been prepared."
-        msg.append(speech)
-        boarding_point = json.dumps(data.get("boarding_point").get("name"))
-        journey_class = json.dumps(data.get("journey_class").get("code"))
-        details = "The intended "+ journey_class +" class journey starts from " + boarding_point + " to "
-        reservation_upto = json.dumps(data.get("reservation_upto").get("name"))
-        doj =  json.dumps(data.get("doj"))
-        details = details + reservation_upto + " on " + doj 
-        speech = speech + " -> " + details
-        msg.append(details)
-        total_passengers =  json.dumps(data.get("total_passengers")) 
-        details = "The booking details of "+ total_passengers +" passenger/s are as follows: "
-        speech = speech + " -> " + details
-        msg.append(details)
-        for passenger in data['passengers']:
-            speech = speech + passenger['current_status'] + ", "
-            msg.append(passenger['current_status'])
+#         boarding_point = json.dumps(data.get("boarding_point").get("name"))
+#         journey_class = json.dumps(data.get("journey_class").get("code"))
+#         details = "The intended "+ journey_class +" class journey starts from " + boarding_point + " to "
+#         reservation_upto = json.dumps(data.get("reservation_upto").get("name"))
+#         doj =  json.dumps(data.get("doj"))
+#         details = details + reservation_upto + " on " + doj 
+#         speech = speech + " -> " + details
+#         msg.append(details)
+#         total_passengers =  json.dumps(data.get("total_passengers")) 
+#         details = "The booking details of "+ total_passengers +" passenger/s are as follows: "
+#         speech = speech + " -> " + details
+#         msg.append(details)
+#         for passenger in data['passengers']:
+#             speech = speech + passenger['current_status'] + ", "
+#             msg.append(passenger['current_status'])
 	
     messages = [{"type": 0, "speech": s[0]} for s in zip(msg)]
     reply = {
