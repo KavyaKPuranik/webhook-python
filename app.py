@@ -391,7 +391,7 @@ def processSeatAvailability(req):
 #     #Process response
     response_code = json.dumps(data.get("response_code"))
     print(response_code)
-    if response_code == "404":
+    if response_code == 404:
         speech = "Sorry, No data"
         msg.append(speech)
 #     train = json.dumps(data.get("train").get("name"))
