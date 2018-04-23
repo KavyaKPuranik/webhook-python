@@ -354,26 +354,32 @@ def processSeatAvailability(req):
     baseurl = "https://api.railwayapi.com/v2/check-seat/train/" 
     remain = "/apikey/"+apikey
     trainNum = req.get("result").get("parameters").get("train_num")
+    print("trainNum " + trainNum)
     if trainNum is None:
         speech = "Please enter train number"
     stationFrom = req.get("result").get("parameters").get("station_from")
+    print("stationFrom " + stationFrom)
     if stationFrom is None:
         speech = "Please enter source station"
     stationTo = req.get("result").get("parameters").get("station_to")
+    print("stationTo " + stationTo)
     if stationTo is None:
         speech = "Please enter destination station"
     date = req.get("result").get("parameters").get("date")
+    print("date " + date)
     if date is None:
         speech = "Please enter travel date"
     pref = req.get("result").get("parameters").get("class")
+    print("pref " + pref)
     if pref is None:
         speech = "Please enter travel class"
     quota = req.get("result").get("parameters").get("quota")
+    print("quota " + quota)
     if quota is None:
         speech = "Please enter travel quota"
     print("speech " + speech)
     if speech == "":
-        print("hi " + baseurl + trainNum + "/source/" + stationFrom + "/dest/" + stationTo + "/date/" + date + "/pref/" + pref + "/quota/" + quota + remain)
+        print("hi " + baseurl +"/source/" + "/dest/" + "/date/" + "/pref/" + "/quota/" + remain)
         query = baseurl + trainNum + "/source/" + stationFrom + "/dest/" + stationTo + "/date/" + date + "/pref/" + pref + "/quota/" + quota + remain
         speech = query
         print("query " + query)
