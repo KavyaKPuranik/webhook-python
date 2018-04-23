@@ -391,14 +391,14 @@ def processSeatAvailability(req):
 #     #Process response
     response_code = json.dumps(data.get("response_code"))
     print(response_code)
-    if response_code == 404:
-        speech = "Sorry, No data"
+    if response_code != 200:
+        speech = "Sorry, No data available. Please check the train number/source/destination/quota/class"
         msg.append(speech)
+#     else:
 #     train = json.dumps(data.get("train").get("name"))
 #     if train == "null":
 #         speech = "Sorry, the PNR seems to be invalid or expired"
 #         msg.append(speech)
-#     else:
 #         speech = "The chart for the train " + train
 #         train_num =  json.dumps(data.get("train").get("number")) 
 #         print("Here "+train_num)
