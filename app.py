@@ -349,15 +349,15 @@ def processStationName(req):
 def processSeatAvailability(req):
     if req.get("result").get("action") != "seatAvailability":
         return {}
-    result = req.get("result")
-    parameters = result.get("parameters")
-    print(json.dumps(parameters))
     msg = []
     speech = ""
     baseurl = "https://api.railwayapi.com/v2/check-seat/train/" 
     remain = "/apikey/"+apikey
-    trainNum = req.get("result").get("parameters").get("train_num")
-    print("trainNum " + trainNum)
+    result = req.get("result")
+    parameters = result.get("parameters")
+    print(json.dumps(parameters))
+    trainNum = parameters.get("train_num")
+    print("trainNum " + json.dumps(trainNum))
     if trainNum is None:
         speech = "Please enter train number"
     stationFrom = req.get("result").get("parameters").get("station_from")
