@@ -356,22 +356,24 @@ def processSeatAvailability(req):
     result = req.get("result")
     parameters = result.get("parameters")
     print(json.dumps(parameters))
-    trainNum = parameters.get("train_num")
-    print("trainNum " + json.dumps(trainNum))
+    trainNum = json.dumps(parameters.get("train_num"))
+    print("trainNum " + trainNum)
     if trainNum is None:
         speech = "Please enter train number"
-    stationFrom = req.get("result").get("parameters").get("station_from")
+    stationFrom = parameters.get("station_from")
     print("stationFrom " + stationFrom)
     if stationFrom is None:
         speech = "Please enter source station"
-    stationTo = req.get("result").get("parameters").get("station_to")
+    stationTo = parameters.get("station_to")
     print("stationTo " + stationTo)
     if stationTo is None:
         speech = "Please enter destination station"
-    date = req.get("result").get("parameters").get("date")
+    date = parameters.get("date")
     print("date " + date)
     if date is None:
-        speech = "Please enter travel date"
+        date = datetime.date.today().strftime("%d-%m-%Y")
+    else:
+        date = datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%d-%m-%Y')
     pref = req.get("result").get("parameters").get("class")
     print("pref " + pref)
     if pref is None:
@@ -382,7 +384,6 @@ def processSeatAvailability(req):
         speech = "Please enter travel quota"
     print("speech " + speech)
     if speech == "":
-        print("hi " + baseurl +"/source/" + "/dest/" + "/date/" + "/pref/" + "/quota/" + remain)
         query = baseurl + trainNum + "/source/" + stationFrom + "/dest/" + stationTo + "/date/" + date + "/pref/" + pref + "/quota/" + quota + remain
         speech = query
         print("query " + query)
